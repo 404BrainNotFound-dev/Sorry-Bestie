@@ -161,13 +161,46 @@ window.addEventListener('resize', updateCanvasSize);
 
 // Mobile touch handling improvements
 let isTouching = false;
+let assetsLoaded = 0;
+const totalAssets = 7;
 
-const loadingScreen = document.getElementById('loading-screen');
-const preGameLoadingScreen = document.getElementById('pre-game-loading-screen');
-const startScreen = document.getElementById('start-screen');
-const gameOverScreen = document.getElementById('game-over-screen');
-const leaderboardScreen = document.getElementById('leaderboard-screen');
-const difficultyScreen = document.getElementById('difficulty-screen');
+// UI Screen State Management
+let currentScreen = 'loading';
+const screens = {
+  loading: document.getElementById('loading-screen'),
+  preGame: document.getElementById('pre-game-loading-screen'),
+  start: document.getElementById('start-screen'),
+  leaderboard: document.getElementById('leaderboard-screen'),
+  difficulty: document.getElementById('difficulty-screen'),
+  gameOver: document.getElementById('game-over-screen')
+};
+
+function showScreen(screenName) {
+  // Hide all screens first
+  Object.values(screens).forEach(screen => {
+    if (screen) screen.style.display = 'none';
+  });
+  
+  // Show requested screen
+  if (screens[screenName]) {
+    screens[screenName].style.display = 'flex';
+    currentScreen = screenName;
+  }
+  
+  // Special handling for score display
+  if (screenName === 'game') {
+    document.getElementById('score').style.display = 'block';
+  } else {
+    document.getElementById('score').style.display = 'none';
+  }
+}
+
+const loadingScreen = screens.loading;
+const preGameLoadingScreen = screens.preGame;
+const startScreen = screens.start;
+const gameOverScreen = screens.gameOver;
+const leaderboardScreen = screens.leaderboard;
+const difficultyScreen = screens.difficulty;
 const playBtn = document.getElementById('play-btn');
 const leaderboardBtn = document.getElementById('leaderboard-btn');
 const exitBtn = document.getElementById('exit-btn');
@@ -207,17 +240,12 @@ coinImage.src = "coin.png";
 const obstacleImage = new Image();
 obstacleImage.src = "obstacle.jpg";
 
-// Track loading state
-let assetsLoaded = 0;
-const totalAssets = 7; // Added preGameBackgroundImage
-
 function assetLoaded() {
   assetsLoaded++;
   if (assetsLoaded >= totalAssets) {
     // All assets loaded, hide loading screen after a brief delay
     setTimeout(() => {
-      loadingScreen.style.display = 'none';
-      startScreen.style.display = 'flex';
+      showScreen('start');
       startScreenLoop();
       // Initialize audio immediately so button sounds work from start
       initAudio();
@@ -242,21 +270,18 @@ modiImage.onload = assetLoaded;
 modiImage.onerror = assetLoaded;
 
 /* UPDATED GAME SETTINGS FOR MOBILE OPTIMIZATION */
-const GRAVITY = 0.3; // Reduced gravity for slower falling
-const FLAP_STRENGTH = -6; // Slightly reduced flap strength for better control
-const PIPE_SPEED = 2.0; // Reduced speed for better mobile play
-const PIPE_GAP = 200; // Slightly reduced gap for mobile
-const PIPE_WIDTH = 60; // Slightly reduced width
-const BIRD_SIZE = 32; // Slightly reduced size
+const GRAVITY = 0.15; // Very slow falling - takes ~2 seconds to fall from top to bottom
+const FLAP_STRENGTH = -2.5; // Very gentle jump - only moves a few pixels
+const PIPE_SPEED = 1.25; // 0.5x slower speed for mobile
+const PIPE_GAP = 220; // Slightly increased gap for easier play
+const PIPE_WIDTH = 60;
+const BIRD_SIZE = 32;
 const MIN_PIPE_HEIGHT = 50;
 const MAX_PIPE_HEIGHT = canvas.height - 80 - PIPE_GAP - 50;
 const COIN_SIZE = 28;
 
-// Pipes spawn more frequently but with better spacing
-const PIPE_SPAWN_INTERVAL = 100; // Increased interval for better spacing
-
-// Extended grace period to 2 seconds
-const GRACE_PERIOD_DURATION = 2000; 
+// Extended grace period to 2.5 seconds
+const GRACE_PERIOD_DURATION = 2500; 
 
 let bird = { x: 80, y: canvas.height/2, velocity: 0, radius: BIRD_SIZE/2 };
 let pipes = [];
@@ -275,6 +300,7 @@ let gracePeriodTimer = null;
 let pipeCountSinceLastCoin = 0;
 let isCollecting = false;
 let preGameLoadingInterval = null;
+let gameLoopId = null;
 
 /* clouds init */
 for (let i=0;i<5;i++){
@@ -283,7 +309,7 @@ for (let i=0;i<5;i++){
     y:Math.random()*200, 
     w:40+Math.random()*50, 
     h:20+Math.random()*20, 
-    s:0.3+Math.random()*0.5 // Slower cloud movement
+    s:0.2+Math.random()*0.3 // Very slow cloud movement
   });
 }
 
@@ -329,8 +355,7 @@ function initAudio(){
    ========================= */
 function startPreGameLoading() {
   // Show pre-game loading screen
-  difficultyScreen.style.display = 'none';
-  preGameLoadingScreen.style.display = 'flex';
+  showScreen('preGame');
   
   // Draw background for pre-game loading screen
   drawPreGameBackground();
@@ -357,7 +382,7 @@ function startPreGameLoading() {
       // Start the actual game
       startActualGame();
     }
-  }, 50); // Update more frequently for smoother animation
+  }, 50);
 }
 
 function drawPreGameBackground() {
@@ -370,14 +395,12 @@ function drawPreGameBackground() {
 }
 
 function startActualGame() {
-  preGameLoadingScreen.style.display = 'none';
-  gameOverScreen.style.display = 'none';
-  scoreDisplay.style.display = 'block';
+  showScreen('game');
   resetGame();
   gameRunning = true;
   gameStarted = true;
   playBackgroundMusic();
-  gameLoop(); // Restart game loop if it was paused
+  gameLoop(); // Start game loop
 }
 
 /* =========================
@@ -553,7 +576,7 @@ function resetGame(){
   if (gracePeriodTimer) clearTimeout(gracePeriodTimer);
   gracePeriodTimer = setTimeout(() => {
     gracePeriod = false;
-  }, GRACE_PERIOD_DURATION); // Now 2 seconds
+  }, GRACE_PERIOD_DURATION);
 }
 
 /* =========================
@@ -721,7 +744,7 @@ function updateBird(){
 
 function updatePipes(){
   // Don't create pipes during grace period
-  if (!gracePeriod && frames % PIPE_SPAWN_INTERVAL === 0) createPipe();
+  if (!gracePeriod && frames % 120 === 0) createPipe(); // Increased interval for slower spawning
   
   for (let i = pipes.length-1; i >= 0; i--){
     const p = pipes[i];
@@ -873,16 +896,15 @@ function gameLoop(){
     drawGround();
   }
 
-  requestAnimationFrame(gameLoop);
+  gameLoopId = requestAnimationFrame(gameLoop);
 }
-requestAnimationFrame(gameLoop);
 
 /* =========================
    START SCREEN DRAWING
    ========================= */
 function drawStartScreenBackground(){
   if (startBackgroundImage.complete && startBackgroundImage.naturalWidth > 0) {
-    ctx.filter = 'blur(2px) brightness(0.9)'; // Reduced blur to 30% equivalent
+    ctx.filter = 'blur(2px) brightness(0.9)';
     ctx.drawImage(startBackgroundImage, 0, 0, canvas.width, canvas.height);
     ctx.filter = 'none';
   } else {
@@ -894,7 +916,7 @@ function drawStartScreenBackground(){
 
 // Override the game loop when on start screen
 function startScreenLoop(){
-  if (startScreen.style.display !== 'flex') return;
+  if (currentScreen !== 'start') return;
   
   drawStartScreenBackground();
   requestAnimationFrame(startScreenLoop);
@@ -912,6 +934,7 @@ function startGame(){
 function triggerGameOver(){
   if (!gameRunning) return;
   gameRunning = false;
+  if (gameLoopId) cancelAnimationFrame(gameLoopId);
   stopBackgroundMusic();
   playDeath();
   showDeathScreen();
@@ -920,7 +943,7 @@ function triggerGameOver(){
   if (score > highscore){ highscore = score; try{ localStorage.setItem('flappyBirdHighscore', highscore.toString()); }catch(e){} }
   highscoreSpan.textContent = highscore;
   finalHighscoreSpan.textContent = highscore;
-  gameOverScreen.style.display = 'flex';
+  showScreen('gameOver');
 }
 
 /* controls */
@@ -933,26 +956,22 @@ function flap(){
 /* UI handlers with button sounds */
 playBtn.addEventListener('click', () => {
   playButtonSound();
-  startScreen.style.display = 'none';
-  difficultyScreen.style.display = 'flex';
+  showScreen('difficulty');
 });
 
 leaderboardBtn.addEventListener('click', () => {
   playButtonSound();
-  startScreen.style.display = 'none';
-  leaderboardScreen.style.display = 'flex';
+  showScreen('leaderboard');
 });
 
 exitBtn.addEventListener('click', () => {
   playButtonSound();
-  // Play YouTube video directly in a new window/tab
   window.open("https://www.youtube.com/embed/xvFZjo5PgG0?autoplay=1", "_blank", "width=800,height=600");
 });
 
 backBtn.addEventListener('click', () => {
   playButtonSound();
-  leaderboardScreen.style.display = 'none';
-  startScreen.style.display = 'flex';
+  showScreen('start');
 });
 
 easyBtn.addEventListener('click', () => {
@@ -961,25 +980,22 @@ easyBtn.addEventListener('click', () => {
 
 backDifficultyBtn.addEventListener('click', () => {
   playButtonSound();
-  difficultyScreen.style.display = 'none';
-  startScreen.style.display = 'flex';
+  showScreen('start');
 });
 
 restartBtn.addEventListener('click', ()=>{ 
   playButtonSound();
   initAudio();
   resetGame(); 
-  gameOverScreen.style.display='none'; 
-  scoreDisplay.style.display='block'; 
+  showScreen('game');
   gameRunning=true; 
   playBackgroundMusic(); 
+  gameLoop();
 });
 
 menuBtn.addEventListener('click', ()=>{ 
   playButtonSound();
-  gameOverScreen.style.display='none'; 
-  startScreen.style.display='flex'; 
-  scoreDisplay.style.display='none'; 
+  showScreen('start');
   gameRunning=false; 
   stopBackgroundMusic(); 
 });
@@ -1032,6 +1048,11 @@ document.addEventListener('gesturechange', function(e) {
 });
 document.addEventListener('gestureend', function(e) {
   e.preventDefault();
+});
+
+// Initialize game
+window.addEventListener('load', () => {
+  updateCanvasSize();
 });
 </script>
 </body>
