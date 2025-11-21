@@ -12,11 +12,14 @@
     background:linear-gradient(to bottom,#64b3f4,#c2e59c);
     font-family:Segoe UI, Tahoma, Geneva, Verdana, sans-serif;
     -webkit-tap-highlight-color:transparent;
+    overscroll-behavior: none;
   }
   #game-container{
-    position:relative;width:360px;height:640px;border-radius:12px;overflow:hidden;
+    position:relative;width:100%;height:100vh;max-width:360px;max-height:640px;
+    border-radius:12px;overflow:hidden;
     box-shadow:0 20px 50px rgba(0,0,0,.3);
     -webkit-user-select:none;user-select:none;
+    touch-action: none;
   }
   #game-canvas{position:absolute;left:0;top:0;width:100%;height:100%}
   #start-screen,#game-over-screen,#leaderboard-screen,#difficulty-screen,#loading-screen,#pre-game-loading-screen{
@@ -24,47 +27,49 @@
     justify-content:center;background:rgba(112,197,206,.85);z-index:10;
   }
   #game-over-screen,#leaderboard-screen,#difficulty-screen,#loading-screen,#pre-game-loading-screen{display:none}
-  h1{font-size:48px;color:#f1c40f;text-shadow:3px 3px 0 #e74c3c,6px 6px 0 rgba(0,0,0,.2)}
-  h2{font-size:36px;color:#e74c3c;margin-bottom:6px}
-  .score-display{font-size:28px;color:#fff;font-weight:700}
-  .highscore-display{font-size:18px;color:#f1c40f;margin-bottom:10px}
+  h1{font-size:8vw;color:#f1c40f;text-shadow:3px 3px 0 #e74c3c,6px 6px 0 rgba(0,0,0,.2)}
+  h2{font-size:6vw;color:#e74c3c;margin-bottom:6px}
+  .score-display{font-size:5vw;color:#fff;font-weight:700}
+  .highscore-display{font-size:3.5vw;color:#f1c40f;margin-bottom:10px}
   .btn{
-    background:linear-gradient(to bottom,#f1c40f,#e67e22);border:none;border-radius:50px;padding:12px 28px;
-    font-weight:700;color:#fff;cursor:pointer;margin-top:12px;box-shadow:0 4px 0 #d35400;
+    background:linear-gradient(to bottom,#f1c40f,#e67e22);border:none;border-radius:50px;padding:4.5vw 10.5vw;
+    font-weight:700;color:#fff;cursor:pointer;margin-top:4.5vw;font-size:5vw;
+    box-shadow:0 4px 0 #d35400;
     -webkit-tap-highlight-color:transparent;
+    touch-action: manipulation;
   }
-  #score{position:absolute;top:16px;left:0;width:100%;text-align:center;font-size:60px;font-weight:700;color:#fff;z-index:5;display:none;text-shadow:3px 3px 0 rgba(0,0,0,.3)}
-  .sound-btn{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.8);border-radius:50%;width:40px;height:40px;border:none;z-index:20}
+  #score{position:absolute;top:2.5vh;left:0;width:100%;text-align:center;font-size:10vw;font-weight:700;color:#fff;z-index:5;display:none;text-shadow:3px 3px 0 rgba(0,0,0,.3)}
+  .sound-btn{position:absolute;top:2vh;right:2vw;background:rgba(255,255,255,.8);border-radius:50%;width:11vw;height:11vw;border:none;z-index:20}
   #modi-image{position:absolute;z-index:15;left:0;top:0;width:100%;height:100%;display:none}
-  .leaderboard-item{display:flex;justify-content:space-between;width:80%;max-width:280px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.3);}
-  #loading-text{font-size:24px;color:#fff;font-weight:bold;text-align:center;margin-bottom:30px;text-shadow:2px 2px 4px rgba(0,0,0,0.5);}
-  #loading-bird{width:60px;height:60px;animation:float 2s ease-in-out infinite;}
+  .leaderboard-item{display:flex;justify-content:space-between;width:80%;max-width:280px;padding:3vw 0;border-bottom:1px solid rgba(255,255,255,0.3);}
+  #loading-text{font-size:5vw;color:#fff;font-weight:bold;text-align:center;margin-bottom:10vw;text-shadow:2px 2px 4px rgba(0,0,0,0.5);}
+  #loading-bird{width:16vw;height:16vw;animation:float 2s ease-in-out infinite;}
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
+    50% { transform: translateY(-5vw); }
   }
   #pre-game-loading-container{
     background:rgba(0,0,0,0.7);
-    padding:30px;
-    border-radius:15px;
+    padding:8vw;
+    border-radius:4vw;
     text-align:center;
-    max-width:300px;
+    max-width:85vw;
   }
   #pre-game-loading-text{
-    font-size:22px;
+    font-size:6vw;
     color:#ff6b00;
     font-weight:bold;
-    margin-bottom:20px;
+    margin-bottom:5vw;
     text-shadow:2px 2px 4px rgba(0,0,0,0.8);
   }
   #loading-bar-container{
-    width:250px;
-    height:20px;
+    width:70vw;
+    height:5.5vw;
     background:#333;
     border-radius:10px;
     overflow:hidden;
     position:relative;
-    margin:20px 0;
+    margin:5.5vw 0;
   }
   #loading-bar{
     height:100%;
@@ -74,9 +79,9 @@
   }
   #loading-bird-end{
     position:absolute;
-    top:-10px;
-    width:30px;
-    height:30px;
+    top:-2.5vw;
+    width:8vw;
+    height:8vw;
     transition:transform 8s linear;
   }
 </style>
@@ -144,7 +149,18 @@
    ========================= */
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
-canvas.width = 360; canvas.height = 640;
+
+// Responsive canvas sizing
+function updateCanvasSize() {
+  const container = document.getElementById('game-container');
+  canvas.width = container.clientWidth;
+  canvas.height = container.clientHeight;
+}
+updateCanvasSize();
+window.addEventListener('resize', updateCanvasSize);
+
+// Mobile touch handling improvements
+let isTouching = false;
 
 const loadingScreen = document.getElementById('loading-screen');
 const preGameLoadingScreen = document.getElementById('pre-game-loading-screen');
@@ -225,21 +241,24 @@ obstacleImage.onerror = assetLoaded;
 modiImage.onload = assetLoaded;
 modiImage.onerror = assetLoaded;
 
-// UPDATED GAME SETTINGS:
-const GRAVITY = 0.5;
-const FLAP_STRENGTH = -8;
-const PIPE_SPEED = 2.5;
-const PIPE_GAP = 240;
-const PIPE_WIDTH = 70;
-const BIRD_SIZE = 34;
-const MIN_PIPE_HEIGHT = 60;
-const MAX_PIPE_HEIGHT = canvas.height - 80 - PIPE_GAP - 60;
-const COIN_SIZE = 30;
+/* UPDATED GAME SETTINGS FOR MOBILE OPTIMIZATION */
+const GRAVITY = 0.3; // Reduced gravity for slower falling
+const FLAP_STRENGTH = -6; // Slightly reduced flap strength for better control
+const PIPE_SPEED = 2.0; // Reduced speed for better mobile play
+const PIPE_GAP = 200; // Slightly reduced gap for mobile
+const PIPE_WIDTH = 60; // Slightly reduced width
+const BIRD_SIZE = 32; // Slightly reduced size
+const MIN_PIPE_HEIGHT = 50;
+const MAX_PIPE_HEIGHT = canvas.height - 80 - PIPE_GAP - 50;
+const COIN_SIZE = 28;
 
-// Pipes spawn more frequently (closer together)
-const PIPE_SPAWN_INTERVAL = 85;
+// Pipes spawn more frequently but with better spacing
+const PIPE_SPAWN_INTERVAL = 100; // Increased interval for better spacing
 
-let bird = { x: 100, y: canvas.height/2, velocity: 0, radius: BIRD_SIZE/2 };
+// Extended grace period to 2 seconds
+const GRACE_PERIOD_DURATION = 2000; 
+
+let bird = { x: 80, y: canvas.height/2, velocity: 0, radius: BIRD_SIZE/2 };
 let pipes = [];
 let coins = [];
 let clouds = [];
@@ -259,7 +278,13 @@ let preGameLoadingInterval = null;
 
 /* clouds init */
 for (let i=0;i<5;i++){
-  clouds.push({ x:Math.random()*canvas.width, y:Math.random()*200, w:40+Math.random()*50, h:20+Math.random()*20, s:0.4+Math.random()*0.7 });
+  clouds.push({ 
+    x:Math.random()*canvas.width, 
+    y:Math.random()*200, 
+    w:40+Math.random()*50, 
+    h:20+Math.random()*20, 
+    s:0.3+Math.random()*0.5 // Slower cloud movement
+  });
 }
 
 /* highscore load */
@@ -292,7 +317,7 @@ function initAudio(){
     flapSound = new Audio();
     flapSound.src = "audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNhAMRarw769vGwY5m9/0unEiAg9PsvfwpV8ZAEiZ5fawbR4A";
     pointSound = new Audio();
-    pointSound.src = "audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQgAAAAAAAAAAAAAAAD//wIA/f8DAPv/AwD5/wQA9/8FAPX/BgDz/wcA8f8IAPP/CADw/wkA7v8KAO3/CwDr/wsA6v8MAOn/DADo/wwA5/8NAOb/DQDl/w0A5P8OAOX/DQDm/w0A5/8MAOj/DADq/w0A6/8MAOz/CwDt/wsA7f8MAO7/CwDv/wsA8f8KAPH/CgDy/woA8/8JAPP/CQD0/wkA9f8JAPT/CQD2/wkA9/8JAPT/CQD2/wkA9/8JAPj/CQD4/wkA+f8JAPn/CQD6/wkA+/8JAPv/CQD8/wkA/v8JAP3/CQD+/wkA/v8JAP7/CQD//wkA//8JAP//CQA=";
+    pointSound.src = "audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQgAAAAAAAAAAAAAAAD//wIA/f8DAPv/AwD5/wQA9/8FAPX/BgDz/wcA8f8IAPP/CADw/wkA7v8KAO3/CwDr/wsA6v8MAOn/DADo/wwA5/8NAOb/DQDl/w0A5P8OAOX/DQDm/w0A5/8MAOj/DADq/w0A6/8MAOz/CwDt/wsA7f8MAO7/CwDv/wsA8f8KAPH/CgDy/woA8/8JAPP/CQD0/wkA9f8JAPT/CQD2/wkA9/8JAPf/CQD0/wkA9v8JAPf/CQD4/wkA+f8JAPn/CQD6/wkA+/8JAPv/CQD8/wkA/v8JAP3/CQD+/wkA/v8JAP7/CQD//wkA//8JAP//CQA=";
   } catch(e){ 
     console.log('audio init error',e); 
     soundsEnabled = false; 
@@ -325,7 +350,7 @@ function startPreGameLoading() {
     // Update loading bar
     loadingBar.style.width = progress + '%';
     // Move the bird with the loading bar
-    loadingBirdEnd.style.transform = `translateX(${(progress/100) * 250 - 15}px)`;
+    loadingBirdEnd.style.transform = `translateX(${(progress/100) * loadingBar.parentElement.clientWidth - 15}px)`;
     
     if (progress >= 100) {
       clearInterval(preGameLoadingInterval);
@@ -516,7 +541,7 @@ function createPipe(){
 
 /* reset game state */
 function resetGame(){
-  bird = { x:100, y:canvas.height/2, velocity:0, radius:BIRD_SIZE/2 };
+  bird = { x:80, y:canvas.height/2, velocity:0, radius:BIRD_SIZE/2 };
   pipes = []; 
   coins = [];
   frames = 0; 
@@ -528,7 +553,7 @@ function resetGame(){
   if (gracePeriodTimer) clearTimeout(gracePeriodTimer);
   gracePeriodTimer = setTimeout(() => {
     gracePeriod = false;
-  }, 1500);
+  }, GRACE_PERIOD_DURATION); // Now 2 seconds
 }
 
 /* =========================
@@ -545,7 +570,15 @@ function drawClouds(){
   });
 }
 
-function updateClouds(){ clouds.forEach(c=>{ c.x -= c.s; if (c.x + c.w < 0){ c.x = canvas.width + 20; c.y = Math.random()*180; } }); }
+function updateClouds(){ 
+  clouds.forEach(c=>{ 
+    c.x -= c.s; 
+    if (c.x + c.w < 0){ 
+      c.x = canvas.width + 20; 
+      c.y = Math.random()*180; 
+    } 
+  }); 
+}
 
 function drawBird(){
   ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
@@ -677,14 +710,18 @@ function updateBird(){
     bird.velocity += GRAVITY; 
     bird.y += bird.velocity;
   }
-  if (bird.y - bird.radius < 0){ bird.y = bird.radius; bird.velocity = 0; }
+  if (bird.y - bird.radius < 0){ 
+    bird.y = bird.radius; 
+    bird.velocity = 0; 
+  }
   if (bird.y + bird.radius > canvas.height - 80){
     triggerGameOver();
   }
 }
 
 function updatePipes(){
-  if (frames % PIPE_SPAWN_INTERVAL === 0) createPipe();
+  // Don't create pipes during grace period
+  if (!gracePeriod && frames % PIPE_SPAWN_INTERVAL === 0) createPipe();
   
   for (let i = pipes.length-1; i >= 0; i--){
     const p = pipes[i];
@@ -888,10 +925,7 @@ function triggerGameOver(){
 
 /* controls */
 function flap(){
-  if (!gameStarted){ 
-    return; 
-  }
-  if (!gameRunning) return;
+  if (!gameStarted || !gameRunning) return;
   bird.velocity = FLAP_STRENGTH;
   playFlap();
 }
@@ -957,11 +991,48 @@ soundBtn.addEventListener('click', ()=>{
   if (!soundsEnabled) stopBackgroundMusic(); else if (gameRunning) playBackgroundMusic();
 });
 
-/* input */
-canvas.addEventListener('click', (e)=>{ flap(); });
-canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); flap(); }, {passive:false});
-document.addEventListener('keydown', (e)=>{ if (e.code === 'Space'){ e.preventDefault(); flap(); } });
+/* input handling with mobile touch optimization */
+function handleTouchStart(e) {
+  e.preventDefault();
+  if (!isTouching) {
+    isTouching = true;
+    flap();
+  }
+}
 
+function handleTouchEnd(e) {
+  e.preventDefault();
+  isTouching = false;
+}
+
+// Prevent scrolling on mobile
+document.body.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
+
+canvas.addEventListener('click', (e) => { 
+  if (!isTouching) flap(); 
+});
+
+canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') { 
+    e.preventDefault(); 
+    flap(); 
+  }
+});
+
+// Prevent double-tap zoom on mobile
+document.addEventListener('gesturestart', function(e) {
+  e.preventDefault();
+});
+document.addEventListener('gesturechange', function(e) {
+  e.preventDefault();
+});
+document.addEventListener('gestureend', function(e) {
+  e.preventDefault();
+});
 </script>
 </body>
 </html>
