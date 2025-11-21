@@ -185,8 +185,15 @@
             color: #8b0000;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
-        
-        .btn:hover {
+
+        /* New Play Game Button Style */
+        .play-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border-color: #1c5980;
+        }
+
+        .play-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
@@ -470,6 +477,8 @@
         
         <div class="buttons">
             <a href="index.html" class="btn">Back to You 💕</a>
+            <!-- New Play Game Button -->
+            <a href="game.html" class="btn play-btn">Play Game 🎮</a>
         </div>
     </div>
     
@@ -542,7 +551,7 @@
             
             // Remove after animation completes
             setTimeout(() => {
-                if (reaction.parentNode) {
+                if (reaction.parentNode) {ga
                     reaction.remove();
                 }
             }, 1500);
@@ -570,4 +579,3 @@
     </script>
 </body>
 </html>
-
